@@ -1,0 +1,41 @@
+apiVersion: v1beta3
+kind: ReplicationController
+metadata:
+  labels:
+    name: cassandra-215
+  name: cassandra-215
+spec:
+  replicas: 2
+  selector:
+    name: cassandra
+    version: v2.1.5
+  template:
+    metadata:
+      labels:
+        name: cassandra
+        version: v2.1.5
+    spec:
+      containers:
+        - command:
+            - /run.sh
+          resources:
+            limits:
+              cpu: 1
+          env:
+            - name: MAX_HEAP_SIZE
+              value: 512M
+            - name: HEAP_NEWSIZE
+              value: 100M
+          image: gcr.io/linear-pointer-95422/cassandra_image:v2.1.5
+          name: cassandra
+          ports:
+            - containerPort: 9042
+              name: cql
+            - containerPort: 9160
+              name: thrift
+          volumeMounts:
+            - mountPath: /cassandra_data
+              name: data
+      volumes:
+        - name: data
+          emptyDir: {}

@@ -1,0 +1,9 @@
+source 'https://rubygems.org'
+
+# Gemfile
+gem 'thin'
+gem 'sinatra'
+gem 'json'
+gem 'cassandra-driver'
+gem 'byebug'
+gem 'pry'

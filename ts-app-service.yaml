@@ -1,0 +1,13 @@
+apiVersion: v1beta3
+kind: Service
+metadata:
+  labels:
+    name: timestamper
+  name: timestamper
+spec:
+  ports:
+    - port: 80
+      targetPort: 3000
+  selector:
+    name: timestamper
+  createExternalLoadBalancer: true

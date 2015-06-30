@@ -1,0 +1,78 @@
+<h1>TimeStamper as a Service</h1>
+
+<h1> Your icon: <span id="current_icon" class="glyphicon <%= icon %>" style="padding-left: 30px; font-size: 0.75em;"></span></h1>
+<h5> Your current timestamp is: <span id="current_timestamp"><%= timestamp %></span></h5>
+<h5> Refresh: <span class="btn btn-primary" id="refresher_button">Button</span></h5> Fail? <input type="checkbox" id="fail_yes"></input>
+
+<style>
+  .text215 { color: #090357; }
+  .text214 { color: #C67700; }
+</style>
+
+<table class="table table-hover">
+  <thead>
+    <tr>
+      <th class="col-sm-3">Timestamp</th>
+      <th class="col-sm-3">Icon</th>
+      <th class="col-sm-6">Icon Name</th>
+    </tr>
+  </thead>
+  <tbody id="ts_body" style="<%= bad_times ? "display: none" : "" %>;">
+  <% all_timestamps.each do | row | %>
+    <% row_class = (row["ser_ver"] == "2.1.5") ? ' text215' : ' text214' %>
+    <tr class="<%= row_class %>">
+      <td scope="row"><%= row["ts"] %></td> 
+      <td><span class='glyphicon <%= row["icon"]%>'>
+      </span></td>
+      <td><%= row["icon"] %></td>
+    </tr>
+  <% end %>
+  </tbody>
+  <tbody id="bad_times" style="<%= bad_times ? "" : "display: none" %>;">
+    <tr>
+      <td colspan="12"><h2 style="margin-left:auto; margin-right:auto; width:90%;">Oh Noes! The Database Is Not Available!</h2></td>
+    </tr>
+  </tbody>
+</table>
+
+
+<script>
+$(document).ready(function(){
+  $("#refresher_button").click(function(e){
+      e.preventDefault();
+      var fail_yes = $("#fail_yes").is(':checked');
+      $.ajax({type: "GET",
+              url: "/json",
+              data: {fail: fail_yes}, 
+              success:function(data) {
+                console.log(data);
+                if (data != null) {
+                  if(data.bad_times == false) {
+                                    var row_class = "text214";
+                                    if(data.ser_ver == "2.1.5") {
+                                      row_class = "text215";
+                                    };
+                                    $('#ts_body').show();
+                                    $('#bad_times').hide();
+                                    $("#ts_body").prepend("<tr class=\" " + row_class + "\"> \
+                                                          <th scope=\"row\">"+data.timestamp +"</th> \
+                                                          <td><span class='glyphicon "+data.icon+"'> \
+                                                          </span></td> \
+                                                          <td>"+data.icon+"</td> \
+                                                        </tr>");
+                                    $("#current_icon")
+                                      .removeClass()
+                                      .addClass("glyphicon")
+                                      .addClass(data.icon);
+                                    $("#current_timestamp").text(data.timestamp);
+                                  }
+                  else {
+                    $('#ts_body').hide();
+                    $('#bad_times').show();
+                  };
+                };
+              }
+            });
+  });
+});
+</script>

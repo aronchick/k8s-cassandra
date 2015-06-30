@@ -1,0 +1,28 @@
+apiVersion: v1beta3
+kind: ReplicationController
+metadata:
+  name: timestamper
+spec:
+  replicas: 1
+  selector:
+    name: timestamper
+    version: v1.0.3
+  template:
+    metadata:
+      labels:
+        name: timestamper
+        version: v1.0.3
+    spec:
+      containers:
+      - image: gcr.io/linear-pointer-95422/ts_app_image:v1.0.3
+        name: timestamper
+        livenessProbe:
+        # an http probe
+        httpGet:
+          path: /_status/healthz
+          port: 3000
+          initialDelaySeconds: 30
+          timeoutSeconds: 1
+        ports:
+        - containerPort: 3000
+          protocol: TCP
